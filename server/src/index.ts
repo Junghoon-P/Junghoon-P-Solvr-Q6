@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+// import cookie from '@fastify/cookie' // TODO: 패키지 설치 필요
 import env from './config/env'
 import { initializeDatabase, getDb } from './db'
 import runMigration from './db/migrate'
@@ -30,6 +31,9 @@ async function start() {
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       credentials: true
     })
+
+    // 쿠키 플러그인 등록 (TODO: @fastify/cookie 패키지 설치 후 주석 해제)
+    // await fastify.register(cookie)
 
     // 데이터베이스 마이그레이션 및 초기화
     await runMigration()
