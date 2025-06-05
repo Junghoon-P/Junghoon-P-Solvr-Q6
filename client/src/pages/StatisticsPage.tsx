@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { sleepService, SleepStatistics } from '../services/sleepService'
 import { SleepTrendChart, SleepQualityChart, WeeklyPatternChart } from '../components/charts'
+import { SleepAnalysis } from '../components/SleepAnalysis'
+import { SleepData } from '../types/ai.types'
 
 const StatisticsPage = () => {
   const [statistics, setStatistics] = useState<SleepStatistics | null>(null)
@@ -36,6 +38,25 @@ const StatisticsPage = () => {
     const hours = Math.floor(minutes / 60)
     const mins = minutes % 60
     return `${hours}시간 ${mins}분`
+  }
+
+  // 수면 통계 데이터를 AI 분석용 데이터로 변환
+  const convertToAIData = (): SleepData[] => {
+    if (!statistics?.sleepTrend) return []
+
+    return statistics.sleepTrend.map(item => ({
+      date: item.date,
+      sleepTime: '23:00', // 기본값 (실제 데이터가 있다면 사용)
+      wakeTime: '07:00', // 기본값 (실제 데이터가 있다면 사용)
+      duration: item.duration / 60, // 분을 시간으로 변환
+      quality: item.quality
+    }))
+  }
+
+  // AI 분석 기간 결정
+  const getAIPeriod = () => {
+    if (selectedPeriod <= 7) return 'week'
+    return 'month'
   }
 
   if (isLoading) {
@@ -91,6 +112,9 @@ const StatisticsPage = () => {
           </select>
         </div>
       </div>
+
+      {/* AI 수면 분석 섹션 */}
+      <SleepAnalysis sleepData={convertToAIData()} period={getAIPeriod()} />
 
       {/* 기본 통계 카드 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

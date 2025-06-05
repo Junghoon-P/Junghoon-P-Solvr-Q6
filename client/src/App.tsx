@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
 import ProtectedRoute from './components/ProtectedRoute'
+import { AIStatusIndicator } from './components/AIStatusIndicator'
 import LoginPage from './pages/LoginPage'
 import SleepRecordsPage from './pages/SleepRecordsPage'
 import CreateSleepRecordPage from './pages/CreateSleepRecordPage'
@@ -11,27 +12,32 @@ import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <MainLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<SleepRecordsPage />} />
-        <Route path="sleep">
+    <>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<SleepRecordsPage />} />
-          <Route path="new" element={<CreateSleepRecordPage />} />
-          <Route path=":id" element={<SleepRecordDetailPage />} />
-          <Route path=":id/edit" element={<EditSleepRecordPage />} />
+          <Route path="sleep">
+            <Route index element={<SleepRecordsPage />} />
+            <Route path="new" element={<CreateSleepRecordPage />} />
+            <Route path=":id" element={<SleepRecordDetailPage />} />
+            <Route path=":id/edit" element={<EditSleepRecordPage />} />
+          </Route>
+          <Route path="statistics" element={<StatisticsPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
-        <Route path="statistics" element={<StatisticsPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
-    </Routes>
+      </Routes>
+
+      {/* AI 상태 인디케이터 */}
+      <AIStatusIndicator />
+    </>
   )
 }
 
