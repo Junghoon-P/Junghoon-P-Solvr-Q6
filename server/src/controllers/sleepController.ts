@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3'
 import Database from 'better-sqlite3'
 import { eq, and, desc } from 'drizzle-orm'
 import { sleepRecords } from '../db/schema'
-import { successResponse, errorResponse } from '../utils/response'
+import { createSuccessResponse, createErrorResponse } from '../utils/response'
 import env from '../config/env'
 
 const sqlite = new Database(env.DATABASE_URL)
@@ -52,7 +52,7 @@ export const getSleepRecords = async (
     const userId = request.user?.id
 
     if (!userId) {
-      return reply.status(401).send(errorResponse('로그인이 필요합니다.'))
+      return reply.status(401).send(createErrorResponse('로그인이 필요합니다.'))
     }
 
     const records = await db
@@ -61,10 +61,10 @@ export const getSleepRecords = async (
       .where(eq(sleepRecords.userId, userId))
       .orderBy(desc(sleepRecords.date))
 
-    reply.send(successResponse('수면 기록을 가져왔습니다.', { records }))
+    reply.send(createSuccessResponse({ records }, '수면 기록을 가져왔습니다.'))
   } catch (error) {
     console.error('수면 기록 조회 중 오류:', error)
-    reply.status(500).send(errorResponse('수면 기록 조회 중 오류가 발생했습니다.'))
+    reply.status(500).send(createErrorResponse('수면 기록 조회 중 오류가 발생했습니다.'))
   }
 }
 
@@ -78,19 +78,19 @@ export const createSleepRecord = async (
     const { date, sleepTime, wakeTime, quality, notes } = request.body
 
     if (!userId) {
-      return reply.status(401).send(errorResponse('로그인이 필요합니다.'))
+      return reply.status(401).send(createErrorResponse('로그인이 필요합니다.'))
     }
 
     // 필수 필드 검증
     if (!date || !sleepTime || !wakeTime || !quality) {
       return reply
         .status(400)
-        .send(errorResponse('날짜, 취침시간, 기상시간, 수면품질은 필수입니다.'))
+        .send(createErrorResponse('날짜, 취침시간, 기상시간, 수면품질은 필수입니다.'))
     }
 
     // 수면 품질 범위 검증
     if (quality < 1 || quality > 5) {
-      return reply.status(400).send(errorResponse('수면 품질은 1-5 사이의 값이어야 합니다.'))
+      return reply.status(400).send(createErrorResponse('수면 품질은 1-5 사이의 값이어야 합니다.'))
     }
 
     // 수면 시간 계산
@@ -104,7 +104,7 @@ export const createSleepRecord = async (
       .limit(1)
 
     if (existingRecord.length > 0) {
-      return reply.status(409).send(errorResponse('해당 날짜의 수면 기록이 이미 존재합니다.'))
+      return reply.status(409).send(createErrorResponse('해당 날짜의 수면 기록이 이미 존재합니다.'))
     }
 
     // 수면 기록 생성
@@ -121,10 +121,12 @@ export const createSleepRecord = async (
       })
       .returning()
 
-    reply.status(201).send(successResponse('수면 기록이 생성되었습니다.', { record: newRecord[0] }))
+    reply
+      .status(201)
+      .send(createSuccessResponse({ record: newRecord[0] }, '수면 기록이 생성되었습니다.'))
   } catch (error) {
     console.error('수면 기록 생성 중 오류:', error)
-    reply.status(500).send(errorResponse('수면 기록 생성 중 오류가 발생했습니다.'))
+    reply.status(500).send(createErrorResponse('수면 기록 생성 중 오류가 발생했습니다.'))
   }
 }
 
@@ -139,11 +141,11 @@ export const updateSleepRecord = async (
     const updateData = request.body
 
     if (!userId) {
-      return reply.status(401).send(errorResponse('로그인이 필요합니다.'))
+      return reply.status(401).send(createErrorResponse('로그인이 필요합니다.'))
     }
 
     if (isNaN(recordId)) {
-      return reply.status(400).send(errorResponse('잘못된 기록 ID입니다.'))
+      return reply.status(400).send(createErrorResponse('잘못된 기록 ID입니다.'))
     }
 
     // 기존 기록 확인 (소유권 체크)
@@ -154,7 +156,7 @@ export const updateSleepRecord = async (
       .limit(1)
 
     if (existingRecord.length === 0) {
-      return reply.status(404).send(errorResponse('수면 기록을 찾을 수 없습니다.'))
+      return reply.status(404).send(createErrorResponse('수면 기록을 찾을 수 없습니다.'))
     }
 
     const currentRecord = existingRecord[0]
@@ -169,7 +171,9 @@ export const updateSleepRecord = async (
     if (updateData.wakeTime) updatedData.wakeTime = updateData.wakeTime
     if (updateData.quality) {
       if (updateData.quality < 1 || updateData.quality > 5) {
-        return reply.status(400).send(errorResponse('수면 품질은 1-5 사이의 값이어야 합니다.'))
+        return reply
+          .status(400)
+          .send(createErrorResponse('수면 품질은 1-5 사이의 값이어야 합니다.'))
       }
       updatedData.quality = updateData.quality
     }
@@ -189,10 +193,10 @@ export const updateSleepRecord = async (
       .where(eq(sleepRecords.id, recordId))
       .returning()
 
-    reply.send(successResponse('수면 기록이 수정되었습니다.', { record: updatedRecord[0] }))
+    reply.send(createSuccessResponse({ record: updatedRecord[0] }, '수면 기록이 수정되었습니다.'))
   } catch (error) {
     console.error('수면 기록 수정 중 오류:', error)
-    reply.status(500).send(errorResponse('수면 기록 수정 중 오류가 발생했습니다.'))
+    reply.status(500).send(createErrorResponse('수면 기록 수정 중 오류가 발생했습니다.'))
   }
 }
 
@@ -206,11 +210,11 @@ export const deleteSleepRecord = async (
     const recordId = parseInt(request.params.id)
 
     if (!userId) {
-      return reply.status(401).send(errorResponse('로그인이 필요합니다.'))
+      return reply.status(401).send(createErrorResponse('로그인이 필요합니다.'))
     }
 
     if (isNaN(recordId)) {
-      return reply.status(400).send(errorResponse('잘못된 기록 ID입니다.'))
+      return reply.status(400).send(createErrorResponse('잘못된 기록 ID입니다.'))
     }
 
     // 기존 기록 확인 (소유권 체크)
@@ -221,16 +225,16 @@ export const deleteSleepRecord = async (
       .limit(1)
 
     if (existingRecord.length === 0) {
-      return reply.status(404).send(errorResponse('수면 기록을 찾을 수 없습니다.'))
+      return reply.status(404).send(createErrorResponse('수면 기록을 찾을 수 없습니다.'))
     }
 
     // 수면 기록 삭제
     await db.delete(sleepRecords).where(eq(sleepRecords.id, recordId))
 
-    reply.send(successResponse('수면 기록이 삭제되었습니다.'))
+    reply.send(createSuccessResponse(null, '수면 기록이 삭제되었습니다.'))
   } catch (error) {
     console.error('수면 기록 삭제 중 오류:', error)
-    reply.status(500).send(errorResponse('수면 기록 삭제 중 오류가 발생했습니다.'))
+    reply.status(500).send(createErrorResponse('수면 기록 삭제 중 오류가 발생했습니다.'))
   }
 }
 
@@ -244,11 +248,11 @@ export const getSleepRecord = async (
     const recordId = parseInt(request.params.id)
 
     if (!userId) {
-      return reply.status(401).send(errorResponse('로그인이 필요합니다.'))
+      return reply.status(401).send(createErrorResponse('로그인이 필요합니다.'))
     }
 
     if (isNaN(recordId)) {
-      return reply.status(400).send(errorResponse('잘못된 기록 ID입니다.'))
+      return reply.status(400).send(createErrorResponse('잘못된 기록 ID입니다.'))
     }
 
     const record = await db
@@ -258,12 +262,12 @@ export const getSleepRecord = async (
       .limit(1)
 
     if (record.length === 0) {
-      return reply.status(404).send(errorResponse('수면 기록을 찾을 수 없습니다.'))
+      return reply.status(404).send(createErrorResponse('수면 기록을 찾을 수 없습니다.'))
     }
 
-    reply.send(successResponse('수면 기록을 가져왔습니다.', { record: record[0] }))
+    reply.send(createSuccessResponse({ record: record[0] }, '수면 기록을 가져왔습니다.'))
   } catch (error) {
     console.error('수면 기록 조회 중 오류:', error)
-    reply.status(500).send(errorResponse('수면 기록 조회 중 오류가 발생했습니다.'))
+    reply.status(500).send(createErrorResponse('수면 기록 조회 중 오류가 발생했습니다.'))
   }
 }
