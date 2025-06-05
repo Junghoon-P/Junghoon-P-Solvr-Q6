@@ -5,8 +5,9 @@ import LoginPage from './pages/LoginPage'
 import SleepRecordsPage from './pages/SleepRecordsPage'
 import CreateSleepRecordPage from './pages/CreateSleepRecordPage'
 import SleepRecordDetailPage from './pages/SleepRecordDetailPage'
-import NotFoundPage from './pages/NotFoundPage'
 import EditSleepRecordPage from './pages/EditSleepRecordPage'
+import StatisticsPage from './pages/StatisticsPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path=":id" element={<SleepRecordDetailPage />} />
           <Route path=":id/edit" element={<EditSleepRecordPage />} />
         </Route>
+        <Route path="statistics" element={<StatisticsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

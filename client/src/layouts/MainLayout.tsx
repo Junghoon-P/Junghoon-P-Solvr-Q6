@@ -1,13 +1,30 @@
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 const MainLayout = () => {
   const { user, logout } = useAuth()
+  const location = useLocation()
 
   const handleLogout = async () => {
     if (confirm('로그아웃 하시겠습니까?')) {
       await logout()
     }
+  }
+
+  const isActivePath = (path: string) => {
+    if (path === '/' && location.pathname === '/') return true
+    if (path === '/statistics' && location.pathname === '/statistics') return true
+    if (path === '/sleep' && (location.pathname === '/' || location.pathname.startsWith('/sleep')))
+      return true
+    return false
+  }
+
+  const getNavLinkClass = (path: string) => {
+    const baseClass = 'px-3 py-2 rounded-md text-sm font-medium transition-colors'
+    const activeClass = 'bg-blue-100 text-blue-700'
+    const inactiveClass = 'text-gray-600 hover:text-blue-600'
+
+    return `${baseClass} ${isActivePath(path) ? activeClass : inactiveClass}`
   }
 
   return (
@@ -23,11 +40,11 @@ const MainLayout = () => {
             </div>
             <div className="flex items-center space-x-4">
               <nav className="flex space-x-4">
-                <Link
-                  to="/"
-                  className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
+                <Link to="/" className={getNavLinkClass('/sleep')}>
                   수면 기록
+                </Link>
+                <Link to="/statistics" className={getNavLinkClass('/statistics')}>
+                  📊 분석
                 </Link>
                 <Link
                   to="/sleep/new"
