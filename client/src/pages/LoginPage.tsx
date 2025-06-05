@@ -86,7 +86,35 @@ const LoginPage = () => {
           </div>
 
           <div className="text-center">
-            <div className="text-sm text-gray-600">테스트 계정: test@test.com / test123</div>
+            <div className="text-sm text-gray-600 mb-2">테스트 계정들:</div>
+            <div className="space-y-1 text-xs text-gray-500">
+              <div>• test@test.com / test123 (기본 계정)</div>
+              <div>• kim.sleep@example.com / sleep123 (김수면)</div>
+              <div>• lee.dream@example.com / dream123 (이꿈나라)</div>
+              <div>• park.sleep@example.com / good123 (박잠자기)</div>
+            </div>
+            <div className="mt-3 space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('kim.sleep@example.com')
+                  setPassword('sleep123')
+                }}
+                className="w-full text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-2 rounded transition-colors"
+              >
+                김수면 계정으로 빠른 로그인
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('test@test.com')
+                  setPassword('test123')
+                }}
+                className="w-full text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-2 rounded transition-colors"
+              >
+                기본 테스트 계정으로 빠른 로그인
+              </button>
+            </div>
           </div>
         </form>
       </div>
