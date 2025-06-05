@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { sleepService, SleepRecord, CreateSleepRecord } from '../services/sleepService'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { CreateSleepRecord, sleepService } from '../services/sleepService'
 
 const EditSleepRecordPage = () => {
   const { id } = useParams<{ id: string }>()

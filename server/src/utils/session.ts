@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import Database from 'better-sqlite3'
-import { eq, and, lt } from 'drizzle-orm'
+import { eq, and, lt, gt } from 'drizzle-orm'
 import { sessions, users } from '../db/schema'
 import type { User } from '../db/schema'
 import env from '../config/env'
@@ -47,7 +47,7 @@ export const validateSession = async (sessionId: string): Promise<User | null> =
         and(
           eq(sessions.id, sessionId),
           // 만료되지 않은 세션만
-          lt(new Date().toISOString(), sessions.expiresAt)
+          gt(sessions.expiresAt, new Date().toISOString())
         )
       )
       .limit(1)

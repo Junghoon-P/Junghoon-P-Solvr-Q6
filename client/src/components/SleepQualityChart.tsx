@@ -23,7 +23,7 @@ const SleepQualityChart = ({ data }: SleepQualityChartProps) => {
   // 0이 아닌 데이터만 필터링
   const filteredData = data.filter(item => item.count > 0)
 
-  const formatTooltip = (value: number, name: string, props: any) => {
+  const formatTooltip = (value: number, name: string) => {
     const total = data.reduce((sum, item) => sum + item.count, 0)
     const percentage = total > 0 ? Math.round((value / total) * 100) : 0
     return [`${value}회 (${percentage}%)`, name]

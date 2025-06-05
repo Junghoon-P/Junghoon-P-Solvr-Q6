@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 const MainLayout = () => {
