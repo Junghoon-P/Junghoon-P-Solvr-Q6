@@ -40,6 +40,36 @@ export interface CreateSleepRecord {
   notes?: string
 }
 
+// 통계 관련 타입 정의
+export interface SleepTrendData {
+  date: string
+  duration: number
+  quality: number
+}
+
+export interface QualityDistribution {
+  quality: string
+  value: number
+  count: number
+}
+
+export interface WeeklyPatternData {
+  day: string
+  averageDuration: number
+  averageQuality: number
+  count: number
+}
+
+export interface SleepStatistics {
+  totalRecords: number
+  averageSleepDuration: number
+  averageQuality: number
+  sleepTrend: SleepTrendData[]
+  qualityDistribution: QualityDistribution[]
+  weeklyPattern: WeeklyPatternData[]
+  insights: string[]
+}
+
 export const sleepService = {
   async getSleepRecords(): Promise<SleepRecord[]> {
     const response = await fetch(`${API_BASE_URL}/sleep-records`, {
@@ -111,5 +141,19 @@ export const sleepService = {
       const error = await response.json()
       throw new Error(error.error || '수면 기록 삭제에 실패했습니다.')
     }
+  },
+
+  async getSleepStatistics(days: number = 30): Promise<SleepStatistics> {
+    const response = await fetch(`${API_BASE_URL}/statistics?days=${days}`, {
+      method: 'GET',
+      headers: getAuthHeaders(false)
+    })
+
+    if (!response.ok) {
+      throw new Error('수면 통계를 가져올 수 없습니다.')
+    }
+
+    const result = await response.json()
+    return result.data
   }
 }
