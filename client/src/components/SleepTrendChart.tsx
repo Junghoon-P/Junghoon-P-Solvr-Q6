@@ -1,3 +1,4 @@
+import React, { memo, useMemo } from 'react'
 import {
   LineChart,
   Line,
@@ -18,20 +19,27 @@ interface SleepTrendChartProps {
   data: SleepTrendData[]
 }
 
-const SleepTrendChart = ({ data }: SleepTrendChartProps) => {
-  // 데이터를 차트에 적합한 형태로 변환
-  const chartData = data.map(item => ({
-    date: new Date(item.date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
-    수면시간: Math.round((item.duration / 60) * 10) / 10, // 분을 시간으로 변환
-    품질: item.quality
-  }))
+const SleepTrendChart = memo(({ data }: SleepTrendChartProps) => {
+  // 데이터를 차트에 적합한 형태로 변환 - useMemo로 최적화
+  const chartData = useMemo(
+    () =>
+      data.map(item => ({
+        date: new Date(item.date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
+        수면시간: Math.round((item.duration / 60) * 10) / 10, // 분을 시간으로 변환
+        품질: item.quality
+      })),
+    [data]
+  )
 
-  const formatTooltip = (value: number, name: string) => {
-    if (name === '수면시간') {
-      return [`${value}시간`, name]
-    }
-    return [`${value}점`, name]
-  }
+  const formatTooltip = useMemo(
+    () => (value: number, name: string) => {
+      if (name === '수면시간') {
+        return [`${value}시간`, name]
+      }
+      return [`${value}점`, name]
+    },
+    []
+  )
 
   return (
     <div className="w-full h-80">
@@ -95,6 +103,8 @@ const SleepTrendChart = ({ data }: SleepTrendChartProps) => {
       </ResponsiveContainer>
     </div>
   )
-}
+})
+
+SleepTrendChart.displayName = 'SleepTrendChart'
 
 export default SleepTrendChart

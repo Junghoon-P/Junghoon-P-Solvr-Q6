@@ -1,3 +1,5 @@
+import { apiCache } from '../utils/cache'
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
 // 세션 ID 관리
@@ -104,6 +106,13 @@ export interface ExtendedSleepStatistics extends SleepStatistics {
 
 export const sleepService = {
   async getSleepRecords(): Promise<SleepRecord[]> {
+    const cacheKey = apiCache.generateKey('sleep-records')
+    const cached = apiCache.get(cacheKey)
+
+    if (cached) {
+      return cached
+    }
+
     const response = await fetch(`${API_BASE_URL}/sleep-records`, {
       method: 'GET',
       headers: getAuthHeaders(false)
@@ -114,10 +123,21 @@ export const sleepService = {
     }
 
     const result = await response.json()
-    return result.data?.records || []
+    const data = result.data?.records || []
+
+    // 2분간 캐시
+    apiCache.set(cacheKey, data, 2 * 60 * 1000)
+    return data
   },
 
   async getSleepRecord(id: number): Promise<SleepRecord> {
+    const cacheKey = apiCache.generateKey('sleep-record', { id })
+    const cached = apiCache.get(cacheKey)
+
+    if (cached) {
+      return cached
+    }
+
     const response = await fetch(`${API_BASE_URL}/sleep-records/${id}`, {
       method: 'GET',
       headers: getAuthHeaders(false)
@@ -128,7 +148,11 @@ export const sleepService = {
     }
 
     const result = await response.json()
-    return result.data?.record
+    const data = result.data?.record
+
+    // 5분간 캐시
+    apiCache.set(cacheKey, data, 5 * 60 * 1000)
+    return data
   },
 
   async createSleepRecord(data: CreateSleepRecord): Promise<SleepRecord> {
@@ -144,6 +168,10 @@ export const sleepService = {
     }
 
     const result = await response.json()
+
+    // 캐시 무효화 (생성 후 목록 캐시 삭제)
+    apiCache.delete(apiCache.generateKey('sleep-records'))
+
     return result.data?.record
   },
 
@@ -160,6 +188,11 @@ export const sleepService = {
     }
 
     const result = await response.json()
+
+    // 캐시 무효화
+    apiCache.delete(apiCache.generateKey('sleep-records'))
+    apiCache.delete(apiCache.generateKey('sleep-record', { id }))
+
     return result.data?.record
   },
 
@@ -173,9 +206,20 @@ export const sleepService = {
       const error = await response.json()
       throw new Error(error.error || '수면 기록 삭제에 실패했습니다.')
     }
+
+    // 캐시 무효화
+    apiCache.delete(apiCache.generateKey('sleep-records'))
+    apiCache.delete(apiCache.generateKey('sleep-record', { id }))
   },
 
   async getSleepStatistics(days: number = 30): Promise<SleepStatistics> {
+    const cacheKey = apiCache.generateKey('statistics', { days })
+    const cached = apiCache.get(cacheKey)
+
+    if (cached) {
+      return cached
+    }
+
     const response = await fetch(`${API_BASE_URL}/statistics?days=${days}`, {
       method: 'GET',
       headers: getAuthHeaders(false)
@@ -186,11 +230,22 @@ export const sleepService = {
     }
 
     const result = await response.json()
-    return result.data
+    const data = result.data
+
+    // 10분간 캐시 (통계는 자주 변하지 않음)
+    apiCache.set(cacheKey, data, 10 * 60 * 1000)
+    return data
   },
 
   // 확장된 통계 정보 조회
   async getExtendedStatistics(days: number = 30): Promise<ExtendedSleepStatistics> {
+    const cacheKey = apiCache.generateKey('statistics-extended', { days })
+    const cached = apiCache.get(cacheKey)
+
+    if (cached) {
+      return cached
+    }
+
     const response = await fetch(`${API_BASE_URL}/statistics/extended?days=${days}`, {
       method: 'GET',
       headers: getAuthHeaders(false)
@@ -201,7 +256,11 @@ export const sleepService = {
     }
 
     const result = await response.json()
-    return result.data
+    const data = result.data
+
+    // 10분간 캐시
+    apiCache.set(cacheKey, data, 10 * 60 * 1000)
+    return data
   },
 
   // 월간 통계 조회
