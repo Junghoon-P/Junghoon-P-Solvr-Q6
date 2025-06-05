@@ -1,8 +1,11 @@
 import { FastifyInstance } from 'fastify'
-import { login, logout, getCurrentUser } from '../controllers/authController'
+import { login, logout, getCurrentUser, register } from '../controllers/authController'
 import { authMiddleware } from '../middleware/auth'
 
 export default async function authRoutes(fastify: FastifyInstance) {
+  // 회원가입
+  fastify.post('/register', register)
+
   // 로그인
   fastify.post('/login', login)
 

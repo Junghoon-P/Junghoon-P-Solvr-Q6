@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 const LoginPage = () => {
@@ -86,6 +86,13 @@ const LoginPage = () => {
           </div>
 
           <div className="text-center">
+            <span className="text-sm text-gray-600 mb-4 block">
+              계정이 없으신가요?{' '}
+              <Link to="/register" className="font-medium text-green-600 hover:text-green-500">
+                회원가입하기
+              </Link>
+            </span>
+
             <div className="text-sm text-gray-600 mb-2">테스트 계정들:</div>
             <div className="space-y-1 text-xs text-gray-500">
               <div>• test@test.com / test123 (기본 계정)</div>

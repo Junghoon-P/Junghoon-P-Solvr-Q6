@@ -3,6 +3,7 @@ import MainLayout from './layouts/MainLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AIStatusIndicator } from './components/AIStatusIndicator'
 import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 import SleepRecordsPage from './pages/SleepRecordsPage'
 import CreateSleepRecordPage from './pages/CreateSleepRecordPage'
 import SleepRecordDetailPage from './pages/SleepRecordDetailPage'
@@ -15,6 +16,7 @@ function App() {
     <>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/"
           element={
