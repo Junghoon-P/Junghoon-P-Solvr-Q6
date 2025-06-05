@@ -37,6 +37,17 @@ export const useAuth = () => {
     }
   }
 
+  const register = async (name: string, email: string, password: string) => {
+    try {
+      const userData = await authService.register(name, email, password)
+      setUser(userData.user)
+      setIsAuthenticated(true)
+      return userData
+    } catch (error) {
+      throw error
+    }
+  }
+
   const logout = async () => {
     try {
       await authService.logout()
@@ -56,6 +67,7 @@ export const useAuth = () => {
     isLoading,
     user,
     login,
+    register,
     logout,
     checkAuth
   }

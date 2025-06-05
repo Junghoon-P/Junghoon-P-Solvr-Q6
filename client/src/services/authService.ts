@@ -22,6 +22,30 @@ const getAuthHeaders = (includeContentType = true): Record<string, string> => {
 }
 
 export const authService = {
+  async register(name: string, email: string, password: string) {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, email, password })
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || '회원가입에 실패했습니다.')
+    }
+
+    const result = await response.json()
+
+    // 세션 ID 저장
+    if (result.data && result.data.sessionId) {
+      setSessionId(result.data.sessionId)
+    }
+
+    return result.data
+  },
+
   async login(email: string, password: string) {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',

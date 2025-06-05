@@ -16,6 +16,13 @@ interface LoginRequest {
   password: string
 }
 
+// 회원가입 요청 타입
+interface RegisterRequest {
+  name: string
+  email: string
+  password: string
+}
+
 // 로그인
 export const login = async (
   request: FastifyRequest<{ Body: LoginRequest }>,
@@ -110,5 +117,62 @@ export const getCurrentUser = async (
   } catch (error) {
     console.error('사용자 정보 조회 중 오류:', error)
     reply.status(500).send(createErrorResponse('사용자 정보 조회 중 오류가 발생했습니다.'))
+  }
+}
+
+// 회원가입
+export const register = async (
+  request: FastifyRequest<{ Body: RegisterRequest }>,
+  reply: FastifyReply
+): Promise<void> => {
+  try {
+    const { name, email, password } = request.body
+
+    if (!name || !email || !password) {
+      return reply
+        .status(400)
+        .send(createErrorResponse('이름, 이메일, 비밀번호를 모두 입력해주세요.'))
+    }
+
+    // 이메일 중복 확인
+    const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1)
+
+    if (existingUser.length > 0) {
+      return reply.status(409).send(createErrorResponse('이미 등록된 이메일입니다.'))
+    }
+
+    // 새 사용자 생성
+    const newUser = await db
+      .insert(users)
+      .values({
+        name,
+        email,
+        password, // 실제 서비스에서는 비밀번호를 해시화해야 함
+        role: 'USER'
+      })
+      .returning()
+
+    const user = newUser[0]
+
+    // 세션 생성
+    const sessionId = await createSession(user.id)
+
+    reply.status(201).send(
+      createSuccessResponse(
+        {
+          sessionId,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+          }
+        },
+        '회원가입이 완료되었습니다.'
+      )
+    )
+  } catch (error) {
+    console.error('회원가입 중 오류:', error)
+    reply.status(500).send(createErrorResponse('회원가입 처리 중 오류가 발생했습니다.'))
   }
 }

@@ -1,4 +1,5 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
+import { memo, useMemo } from 'react'
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
 interface QualityDistribution {
   quality: string
@@ -10,30 +11,39 @@ interface SleepQualityChartProps {
   data: QualityDistribution[]
 }
 
-const SleepQualityChart = ({ data }: SleepQualityChartProps) => {
-  // 색상 팔레트 정의
-  const COLORS = {
-    '매우 나쁨': '#EF4444', // red-500
-    나쁨: '#F97316', // orange-500
-    보통: '#EAB308', // yellow-500
-    좋음: '#22C55E', // green-500
-    '매우 좋음': '#3B82F6' // blue-500
-  }
+const SleepQualityChart = memo(({ data }: SleepQualityChartProps) => {
+  // 색상 팔레트 정의 - useMemo로 최적화
+  const COLORS = useMemo(
+    () => ({
+      '매우 나쁨': '#EF4444', // red-500
+      나쁨: '#F97316', // orange-500
+      보통: '#EAB308', // yellow-500
+      좋음: '#22C55E', // green-500
+      '매우 좋음': '#3B82F6' // blue-500
+    }),
+    []
+  )
 
-  // 0이 아닌 데이터만 필터링
-  const filteredData = data.filter(item => item.count > 0)
+  // 0이 아닌 데이터만 필터링 - useMemo로 최적화
+  const filteredData = useMemo(() => data.filter(item => item.count > 0), [data])
 
-  const formatTooltip = (value: number, name: string) => {
-    const total = data.reduce((sum, item) => sum + item.count, 0)
-    const percentage = total > 0 ? Math.round((value / total) * 100) : 0
-    return [`${value}회 (${percentage}%)`, name]
-  }
+  const formatTooltip = useMemo(
+    () => (value: number, name: string) => {
+      const total = data.reduce((sum, item) => sum + item.count, 0)
+      const percentage = total > 0 ? Math.round((value / total) * 100) : 0
+      return [`${value}회 (${percentage}%)`, name]
+    },
+    [data]
+  )
 
-  const renderCustomLabel = (entry: any) => {
-    const total = data.reduce((sum, item) => sum + item.count, 0)
-    const percentage = total > 0 ? Math.round((entry.count / total) * 100) : 0
-    return percentage > 5 ? `${percentage}%` : '' // 5% 이상일 때만 라벨 표시
-  }
+  const renderCustomLabel = useMemo(
+    () => (entry: any) => {
+      const total = data.reduce((sum, item) => sum + item.count, 0)
+      const percentage = total > 0 ? Math.round((entry.count / total) * 100) : 0
+      return percentage > 5 ? `${percentage}%` : '' // 5% 이상일 때만 라벨 표시
+    },
+    [data]
+  )
 
   return (
     <div className="w-full h-80">
@@ -73,6 +83,8 @@ const SleepQualityChart = ({ data }: SleepQualityChartProps) => {
       </ResponsiveContainer>
     </div>
   )
-}
+})
+
+SleepQualityChart.displayName = 'SleepQualityChart'
 
 export default SleepQualityChart

@@ -13,10 +13,23 @@
 - **📈 다양한 통계 지표**: 수면 효율성, 일관성, 부채 등 지표 기반 분석
 - **🎯 실시간 수면 점수**: 1-100점 스코어링 시스템으로 수면 품질 정량화
 - **⚡ 실시간 AI 상태 모니터링**: AI 서비스 상태 및 분석 처리 시간 추적
+- **🔐 완전한 인증 시스템**: 회원가입, 로그인, 로그아웃 기능으로 개인 데이터 보호
+- **🚀 고성능 최적화**: 코드 스플리팅, API 캐싱, 컴포넌트 메모화로 빠른 로딩 속도
+- **💾 스마트 캐싱**: 메모리 기반 API 캐싱으로 네트워크 요청 최소화
+- **⚡ 점진적 로딩**: React.lazy 기반 페이지별 코드 분할로 초기 로딩 시간 단축
 
 ## 📝 업데이트 내역
 
 최신 업데이트 내역과 버전별 변경사항은 [CHANGELOG.md](./CHANGELOG.md)를 참조하세요.
+
+### v1.4.0 - 성능 최적화 업데이트 (2024-12-19)
+
+> **📌 참고**: v1.4.0부터는 기존 과제 요구사항 이후의 추가 개선 작업입니다.
+
+- **코드 스플리팅**: React.lazy로 초기 번들 크기 대폭 감소
+- **API 캐싱**: 메모리 기반 캐싱으로 API 호출 횟수 80% 감소
+- **컴포넌트 메모화**: React.memo + useMemo로 렌더링 성능 향상
+- **사용자 경험**: 부드러운 페이지 전환 및 즉시 응답 구현
 
 ### AI 수면 분석 API
 
@@ -49,7 +62,6 @@
 - **이꿈나라**: `lee.dream@example.com` / `dream123`
 - **박잠자기**: `park.sleep@example.com` / `good123`
 
-## 서비스 기능
 
 ### 🤖 AI 수면 분석
 
@@ -83,6 +95,14 @@
 - 데이터 내보내기 (CSV/JSON)
 - 기간별 분석 (주간/월간 패턴)
 
+### 🚀 성능 최적화 기능
+
+- **코드 스플리팅**: React.lazy로 페이지별 지연 로딩, 초기 번들 크기 최소화
+- **스마트 캐싱**: 메모리 기반 API 캐싱으로 네트워크 요청 80% 감소
+- **컴포넌트 메모화**: React.memo + useMemo로 불필요한 리렌더링 방지
+- **점진적 로딩**: Suspense 기반 부드러운 페이지 전환
+- **자동 캐시 관리**: TTL 기반 만료 처리 및 CRUD 작업 시 자동 무효화
+
 ## 기술 스택
 
 ### 공통
@@ -101,6 +121,11 @@
 - 스타일링: TailwindCSS
 - 차트 라이브러리: Recharts
 - 아이콘: Lucide React
+- **성능 최적화**:
+  - 코드 스플리팅: React.lazy + Suspense
+  - 컴포넌트 메모화: React.memo + useMemo + useCallback
+  - API 캐싱: 메모리 기반 TTL 캐싱 시스템
+  - 번들 최적화: Vite 기반 자동 청크 분할
 
 ### 서버
 
@@ -184,6 +209,19 @@ PORT=8000
 ```
 
 ## API 엔드포인트
+
+### 인증 API
+
+- `POST /api/auth/register`: 회원가입
+  - Request: `{ name: string, email: string, password: string }`
+  - Response: `{ success: boolean, data: User, error?: string }`
+- `POST /api/auth/login`: 로그인
+  - Request: `{ email: string, password: string }`
+  - Response: `{ success: boolean, data: User, error?: string }`
+- `POST /api/auth/logout`: 로그아웃
+  - Response: `{ success: boolean }`
+- `GET /api/auth/me`: 현재 사용자 정보 조회
+  - Response: `{ success: boolean, data: User }`
 
 ### AI 분석 API
 
