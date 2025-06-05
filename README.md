@@ -1,8 +1,70 @@
-# 풀스택 서비스 보일러 플레이트
+# 수면 트래커 (Sleep Tracker)
 
 ## 프로젝트 개요
 
-이 보일러 플레이트는 풀스택 웹 애플리케이션 개발을 위한 기본 구조를 제공합니다. monorepo 구조로 클라이언트와 서버를 효율적으로 관리하며, 현대적인 웹 개발 기술 스택을 활용합니다.
+수면 트래커는 개인의 수면 패턴을 체계적으로 기록하고 분석하는 풀스택 웹 애플리케이션입니다.
+
+현대인들의 건강한 수면 습관 형성을 돕기 위해 개발된 이 서비스는 단순한 기록을 넘어서 **데이터 기반의 개인화된 수면 분석과 개선 방안**을 제공합니다. monorepo 구조로 설계되어 클라이언트와 서버를 효율적으로 관리하며, 현대적인 웹 개발 기술 스택을 활용하여 직관적이고 반응형인 사용자 경험을 제공합니다.
+
+### 🌟 주요 특징
+
+- **📊 지능형 수면 분석**: 수면 시간, 품질, 패턴을 다각도로 분석하여 시각적 차트로 제공
+- **🤖 AI 기반 개인화 추천**: 개별 수면 데이터를 바탕으로 한 맞춤형 수면 개선 제안
+- **📈 다양한 통계 지표**: 수면 효율성, 일관성, 부채 등 지표 기반 분석
+
+## 📝 업데이트 내역
+
+최신 업데이트 내역과 버전별 변경사항은 [CHANGELOG.md](./CHANGELOG.md)를 참조하세요.
+
+### 수면 트래커 API
+
+- `GET /api/sleep-records`: 수면 기록 목록 조회
+- `GET /api/sleep-records/:id`: 특정 수면 기록 조회
+- `POST /api/sleep-records`: 새 수면 기록 추가
+- `PUT /api/sleep-records/:id`: 수면 기록 수정
+- `DELETE /api/sleep-records/:id`: 수면 기록 삭제
+- `GET /api/statistics`: 수면 통계 조회
+- `GET /api/statistics/extended`: 확장 수면 통계 조회
+- `GET /api/statistics/monthly`: 월간 수면 통계 조회
+- `GET /api/statistics/quality-trend`: 수면 품질 추이 조회
+- `GET /api/statistics/pattern`: 수면 패턴 분석 조회
+- `GET /api/statistics/ai-insights`: AI 기반 수면 분석 조회
+- `POST /api/sleep-goal`: 수면 목표 설정
+- `GET /api/sleep-goal`: 수면 목표 조회
+- `GET /api/sleep-records/export`: 수면 데이터 내보내기
+
+## 테스트 계정
+
+다음 더미 계정들을 사용하여 서비스를 테스트할 수 있습니다:
+
+- **기본 계정**: `test@test.com` / `test123`
+- **김수면**: `kim.sleep@example.com` / `sleep123`
+- **이꿈나라**: `lee.dream@example.com` / `dream123`
+- **박잠자기**: `park.sleep@example.com` / `good123`
+
+## 서비스 기능
+
+### 수면 기록 관리
+
+- 수면 시간, 기상 시간, 수면 품질 기록
+- 수면 기록 생성, 수정, 삭제
+- 수면 기록 목록 조회 및 상세 보기
+
+### 수면 통계 분석
+
+- 수면 시간 추이 분석 (라인 차트)
+- 수면 품질 분포 분석 (파이 차트)
+- 주간 수면 패턴 분석 (바 차트)
+- 월간/연간 통계 제공
+- AI 기반 개인화된 수면 분석 및 추천
+
+### 고급 분석 기능
+
+- 수면 효율성 계산
+- 수면 일관성 분석
+- 수면 부채 계산
+- 개인화된 수면 개선 추천
+- 데이터 내보내기 (CSV/JSON)
 
 ## 기술 스택
 
@@ -20,11 +82,13 @@
 - 빌드 도구: Vite
 - 라우팅: React Router
 - 스타일링: TailwindCSS
+- 차트 라이브러리: Recharts
 
 ### 서버
 
 - 프레임워크: Fastify
 - 데이터베이스: SQLite with DirzzleORM
+- 비밀번호 해싱: bcrypt
 
 ## 설치 및 실행
 
@@ -33,6 +97,14 @@
 ```bash
 # 프로젝트 루트 디렉토리에서 실행
 pnpm install
+```
+
+### 데이터베이스 마이그레이션
+
+```bash
+# 서버 디렉토리에서 실행
+cd server
+npm run migrate
 ```
 
 ### 개발 서버 실행
@@ -75,7 +147,7 @@ pnpm build
 
 ## API 엔드포인트
 
-서버는 다음과 같은 기본 API 엔드포인트를 제공합니다:
+### 기본 API
 
 - `GET /api/health`: 서버 상태 확인
 - `GET /api/users`: 유저 목록 조회

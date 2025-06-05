@@ -82,12 +82,21 @@ const SleepRecordsPage = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">수면 기록</h1>
-        <Link
-          to="/sleep/new"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-        >
-          새 기록 추가
-        </Link>
+        <div className="flex space-x-3">
+          <Link
+            to="/statistics"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center space-x-2"
+          >
+            <span>📊</span>
+            <span>분석 보기</span>
+          </Link>
+          <Link
+            to="/sleep/new"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+          >
+            새 기록 추가
+          </Link>
+        </div>
       </div>
 
       {error && (
@@ -101,12 +110,20 @@ const SleepRecordsPage = () => {
           <div className="text-6xl mb-4">🌙</div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">아직 수면 기록이 없습니다</h3>
           <p className="text-gray-500 mb-4">첫 번째 수면 기록을 추가해보세요</p>
-          <Link
-            to="/sleep/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            기록 추가하기
-          </Link>
+          <div className="flex justify-center space-x-3">
+            <Link
+              to="/sleep/new"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              기록 추가하기
+            </Link>
+            <Link
+              to="/statistics"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            >
+              📊 분석 보기
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
