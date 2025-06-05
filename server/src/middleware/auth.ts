@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { validateSession } from '../utils/session'
-import { errorResponse } from '../utils/response'
+import { createErrorResponse } from '../utils/response'
 import type { User } from '../db/schema'
 
 // 사용자 정보를 request에 추가하기 위한 타입 확장
@@ -21,21 +21,23 @@ export const authMiddleware = async (
     const sessionId = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
 
     if (!sessionId) {
-      return reply.status(401).send(errorResponse('인증이 필요합니다. 로그인해주세요.'))
+      return reply.status(401).send(createErrorResponse('인증이 필요합니다. 로그인해주세요.'))
     }
 
     // 세션 검증
     const user = await validateSession(sessionId)
 
     if (!user) {
-      return reply.status(401).send(errorResponse('세션이 만료되었습니다. 다시 로그인해주세요.'))
+      return reply
+        .status(401)
+        .send(createErrorResponse('세션이 만료되었습니다. 다시 로그인해주세요.'))
     }
 
     // request에 사용자 정보 추가
     request.user = user
   } catch (error) {
     console.error('인증 미들웨어 오류:', error)
-    return reply.status(500).send(errorResponse('인증 처리 중 오류가 발생했습니다.'))
+    return reply.status(500).send(createErrorResponse('인증 처리 중 오류가 발생했습니다.'))
   }
 }
 
